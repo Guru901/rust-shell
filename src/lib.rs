@@ -32,3 +32,10 @@ pub fn run_type_command(argument: Vec<&str>) {
         print_not_found(argument.get(0).unwrap());
     }
 }
+
+pub fn run_pwd_command() {
+    match std::env::current_dir() {
+        Ok(path) => println!("{}", path.display()),
+        Err(e) => eprintln!("pwd: error getting current directory: {}", e),
+    }
+}
