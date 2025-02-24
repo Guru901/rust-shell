@@ -24,6 +24,9 @@ fn handle_command(command: &str) {
         command if command.starts_with("echo ") => {
             rust_shell::run_echo_command(rust_shell::get_arguments_of_command(command))
         }
+        command if command.starts_with("type ") => {
+            rust_shell::run_type_command(rust_shell::get_arguments_of_command(command))
+        }
         _ => {}
     }
 }
