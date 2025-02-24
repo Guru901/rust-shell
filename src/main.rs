@@ -31,6 +31,11 @@ fn handle_command(command: &str) {
         command if command.starts_with("cd ") => {
             rust_shell::run_cd_command(rust_shell::get_arguments_of_command(command))
         }
-        _ => {}
+        command => {
+            rust_shell::run_executable_command(
+                command,
+                rust_shell::get_arguments_of_command(command),
+            );
+        }
     }
 }

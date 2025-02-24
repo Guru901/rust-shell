@@ -1,7 +1,8 @@
-use std::{env, path::Path};
-
 use dirs::home_dir;
 use pathsearch::find_executable_in_path;
+use std::io::{self, Write};
+use std::process::Command;
+use std::{env, path::Path};
 
 pub fn run_exit_command() {
     std::process::exit(0);
@@ -59,6 +60,24 @@ pub fn run_cd_command(argument: Vec<&str>) {
             env::set_current_dir(result).expect(&format!("cd: {}: No such file or directory", path))
         } else {
             println!("cd: {}: No such file or directory", path);
+        }
+    }
+}
+
+pub fn run_executable_command(command: &str, argument: Vec<&str>) {
+    let command: Vec<&str> = command.split(" ").collect();
+    let command = command.get(0).unwrap();
+
+    match Command::new(command).args(argument).output() {
+        Ok(output) => {
+            print!("{}", String::from_utf8_lossy(&output.stdout));
+            io::stdout().flush().unwrap();
+            if !output.stderr.is_empty() {
+                io::stderr().write_all(&output.stderr).unwrap();
+            }
+        }
+        Err(_) => {
+            eprintln!("{}: command not found", command);
         }
     }
 }
