@@ -1,3 +1,6 @@
+use std::{env, path::Path};
+
+use dirs::home_dir;
 use pathsearch::find_executable_in_path;
 
 pub fn run_exit_command() {
@@ -37,5 +40,25 @@ pub fn run_pwd_command() {
     match std::env::current_dir() {
         Ok(path) => println!("{}", path.display()),
         Err(e) => eprintln!("pwd: error getting current directory: {}", e),
+    }
+}
+
+pub fn run_cd_command(argument: Vec<&str>) {
+    let path = argument.get(0).unwrap_or(&&"/");
+
+    if path == &"~" {
+        if let Some(path) = home_dir() {
+            env::set_current_dir(path).expect("No such file or directory")
+        } else {
+            eprintln!("Could not determine home directory.");
+        }
+    } else {
+        let result = Path::new(path);
+
+        if result.exists() {
+            env::set_current_dir(result).expect(&format!("cd: {}: No such file or directory", path))
+        } else {
+            println!("cd: {}: No such file or directory", path);
+        }
     }
 }
