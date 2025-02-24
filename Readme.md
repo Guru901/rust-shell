@@ -5,7 +5,7 @@ A simple shell written in Rust.
 ## Usage
 
 ```bash
-$ cargo run
+cargo run
 ```
 
 ## Features
