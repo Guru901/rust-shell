@@ -8,3 +8,7 @@ pub fn get_arguments_of_command(command: &str) -> Vec<&str> {
 
     return inp;
 }
+
+pub fn run_echo_command(argument: Vec<&str>) {
+    println!("{}", argument.join(" "));
+}
