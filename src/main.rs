@@ -1,6 +1,8 @@
 use std::io::Stdin;
 use std::io::{self, Write};
 
+use rust_shell::run_exit_command;
+
 fn main() {
     loop {
         prompt();
@@ -16,4 +18,9 @@ fn prompt() {
     handle_command(command);
 }
 
-fn handle_command(command: &str) {}
+fn handle_command(command: &str) {
+    match command {
+        "exit 0" => run_exit_command(),
+        _ => {}
+    }
+}
