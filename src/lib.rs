@@ -113,3 +113,26 @@ fn run_executable_command(command: &str, argument: Vec<&str>) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::io::{stdout, Stdout};
+
+    use super::*;
+
+    #[test]
+    fn test_get_arguments_of_command() {
+        let command = "echo hello";
+        let arguments = get_arguments_of_command(command);
+        assert_eq!(arguments.len(), 1);
+        assert_eq!(arguments[0], "hello");
+    }
+
+    #[test]
+    fn test_run_cd_command() {
+        let command = "cd ~";
+        let arguments = get_arguments_of_command(command);
+        run_cd_command(arguments);
+        assert_eq!(env::current_dir().unwrap(), home_dir().unwrap());
+    }
+}
