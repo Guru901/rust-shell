@@ -1,32 +1,64 @@
 use dirs::home_dir;
 use pathsearch::find_executable_in_path;
-use std::io::{self, Write};
+use std::io::{self, Stdin, Write};
 use std::process::Command;
 use std::{env, path::Path};
 
-pub fn run_exit_command() {
+pub fn prompt() {
+    print!("$ ");
+
+    io::stdout().flush().unwrap();
+
+    let stdin: Stdin = io::stdin();
+    let mut input: String = String::new();
+
+    stdin.read_line(&mut input).unwrap();
+
+    let command: &str = input.trim();
+
+    handle_command(command);
+}
+
+fn handle_command(command: &str) {
+    match command {
+        "exit 0" => run_exit_command(),
+        command if command.starts_with("echo ") => {
+            run_echo_command(get_arguments_of_command(command))
+        }
+        command if command.starts_with("type ") => {
+            run_type_command(get_arguments_of_command(command))
+        }
+        command if command.starts_with("pwd") => run_pwd_command(),
+        command if command.starts_with("cd ") => run_cd_command(get_arguments_of_command(command)),
+        command => {
+            run_executable_command(command, get_arguments_of_command(command));
+        }
+    }
+}
+
+fn run_exit_command() {
     std::process::exit(0);
 }
 
-pub fn get_arguments_of_command(command: &str) -> Vec<&str> {
+fn get_arguments_of_command(command: &str) -> Vec<&str> {
     let mut inp: Vec<&str> = command.split(" ").collect();
     inp.remove(0);
 
     return inp;
 }
 
-pub fn run_echo_command(argument: Vec<&str>) {
+fn run_echo_command(argument: Vec<&str>) {
     println!("{}", argument.join(" "));
 }
 
-pub fn print_shell_builtin(command: Vec<&str>) {
+fn print_shell_builtin(command: Vec<&str>) {
     println!("{} is a shell builtin", command.get(0).unwrap());
 }
-pub fn print_not_found(command: &str) {
+fn print_not_found(command: &str) {
     println!("{command}: not found");
 }
 
-pub fn run_type_command(argument: Vec<&str>) {
+fn run_type_command(argument: Vec<&str>) {
     let builtins = ["type", "exit", "echo", "pwd", "cd"];
     if builtins.contains(&argument.get(0).unwrap()) {
         print_shell_builtin(argument);
@@ -37,14 +69,14 @@ pub fn run_type_command(argument: Vec<&str>) {
     }
 }
 
-pub fn run_pwd_command() {
+fn run_pwd_command() {
     match std::env::current_dir() {
         Ok(path) => println!("{}", path.display()),
         Err(e) => eprintln!("pwd: error getting current directory: {}", e),
     }
 }
 
-pub fn run_cd_command(argument: Vec<&str>) {
+fn run_cd_command(argument: Vec<&str>) {
     let path = argument.get(0).unwrap_or(&&"/");
 
     if path == &"~" {
@@ -64,7 +96,7 @@ pub fn run_cd_command(argument: Vec<&str>) {
     }
 }
 
-pub fn run_executable_command(command: &str, argument: Vec<&str>) {
+fn run_executable_command(command: &str, argument: Vec<&str>) {
     let command: Vec<&str> = command.split(" ").collect();
     let command = command.get(0).unwrap();
 
